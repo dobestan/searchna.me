@@ -10,7 +10,7 @@ clean:
 
 # target: migrate - Migrate all django applications considering app dependencies
 migrate:
-	python searchname/manage.py makemigrations
+	python searchname/manage.py makemigrations multisites items
 	python searchname/manage.py migrate
 
 
