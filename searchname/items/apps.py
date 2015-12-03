@@ -5,4 +5,4 @@ class ItemsAppConfig(AppConfig):
     name = 'items'
 
     def ready(self):
-        pass
+        from items.signals.post_save import create_hash_id

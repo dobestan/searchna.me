@@ -4,7 +4,9 @@ from django.contrib.sites.models import Site
 
 
 class ItemManager(models.Manager):
-    pass
+
+    def get_queryset(self):
+        return super(models.Manager, self).get_queryset().select_related('site', )
 
 
 class Item(models.Model):
@@ -14,7 +16,6 @@ class Item(models.Model):
     )
 
     name = models.CharField(
-        unique=True,
         max_length=128,
         verbose_name='이름',
     )
@@ -24,13 +25,29 @@ class Item(models.Model):
         null=True,
     )
 
+    hash_id = models.CharField(
+        max_length=8,
+        blank=True,
+        null=True,
+        unique=True,
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     objects = ItemManager()
 
     class Meta:
-        pass
+        ordering = ['name', ]
+        unique_together = (
+            ('site', 'name', 'slug', ),
+        )
 
     def __str__(self):
         return self.name
+
+    def _create_hash_id(self):
+        from items.utils.hashids import get_encoded_hashid
+
+        self.hash_id = get_encoded_hashid(self)
+        self.save()
